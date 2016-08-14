@@ -59,7 +59,6 @@ def reply_template_whatgame(user_id, title, subtitle, button1, payload1, button2
     resp = requests.post("https://graph.facebook.com/v2.6/me/messages?access_token=" + ACCESS_TOKEN, json=data)
     print(resp.content)
 
-
 def get_fb_name(id):
     graph = facebook.GraphAPI(ACCESS_TOKEN)
     profile = graph.get_object(id=id)
