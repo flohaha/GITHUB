@@ -18,7 +18,7 @@ def reply(user_id, msg):
     resp = requests.post("https://graph.facebook.com/v2.6/me/messages?access_token=" + ACCESS_TOKEN, json=data)
     print(resp.content)
 
-def reply_template_whatgame(user_id, title, subtitle, button1, payload1, button2, payload2, button3, payload3):
+def reply_template_whatgame(token, user_id, title, subtitle, button1, payload1, button2, payload2, button3, payload3):
     data = {
         "recipient": {"id": user_id},
         "message": {
@@ -49,7 +49,7 @@ def reply_template_whatgame(user_id, title, subtitle, button1, payload1, button2
             }
         }
     }
-    resp = requests.post("https://graph.facebook.com/v2.6/me/messages?access_token=" + ACCESS_TOKEN, json=data)
+    resp = requests.post("https://graph.facebook.com/v2.6/me/messages?access_token=" + token, json=data)
     print(resp.content)
 
 def get_fb_name(id):
