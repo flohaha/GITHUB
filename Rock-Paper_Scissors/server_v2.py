@@ -169,6 +169,8 @@ def handle_messages():
   payload = request.get_data()
   print payload
 
+  #game_dic={}
+
   for sender, message in messaging_events(payload):
 
     print message
@@ -189,8 +191,23 @@ def handle_messages():
 
             battle = battle_multi(game_dic)
 
-            if len(battle[1]) == 0:
-                print "IT'S A TIGHT - EVERYBODY HAS TO RE-PLAY"
+            while len(battle[1]) == 0:
+                #print battle[1]
+                for u in battle[1]:
+                    send_message(PAT, u, 'ITs A TIE - KEEP PLAYING')
+                    reply_template_whatgame3(PAT, u, 'Paper Rock Scissors', 'What do you chose:', 'Paper', 'P',
+                                             'Rock', 'R', 'Scissors', 'S')
+                    battle[u]=''
+
+
+            else:
+                for u in battle[0]:
+                    send_message(PAT, u, 'CONGRATS YOU WON')
+                    battle[u] = ''
+
+                for u in battle[1]:
+                    send_message(PAT, u, 'TOO BAD YOU LOSE')
+                    battle[u] = ''
 
 
     elif message == 'Solo Training':
@@ -217,7 +234,6 @@ def handle_messages():
     else:
         #send_message(PAT, sender, message[::-1])
         reply_template_whatgame1(PAT, sender, 'Paper Rock Scissors', 'Chose your Game:', 'Heads-Up', 'Heads-Up')
-
 
   return "ok"
 
