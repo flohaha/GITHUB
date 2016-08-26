@@ -12,15 +12,24 @@ app = Flask(__name__)
 # by the Facebook App that will be created.
 PAT = 'EAAOoaZCRNGOkBAOKr8sfaV05mQl3zbQhHKjIwgCDeTCrrSXgoMmJZCDRdrboJVRfPor7W6w9pusfMzZC5y4fFDPZCWaC2FDxXGf9Blcsq1Rg6xOTYZAucts1itbDsl9JaENrI5hC6VpCz1S4ZCxPjkw0JUctv7chZCKtlRi1YmC0gZDZD'
 
-user_dic = {'Flo Floh':1091914804213570, 'Flo Geneve':1091914804213570}
+
 
 global game_dic
 game_dic = {}
+player_list = {}
+player_list = {'1050840511630610': 'Flo Geneve', '1081427855265472': 'Flo Floh'}
 
 global game_choice
 game_choice = ['P','R','S']
 
 def get_fb_name(id):
+    graph = facebook.GraphAPI(PAT)
+    profile = graph.get_object(id=id)
+    print profile
+    user = profile['first_name'] ## + ' ' + profile['last_name']
+    return user
+
+def get_fb_full_name(id):
     graph = facebook.GraphAPI(PAT)
     profile = graph.get_object(id=id)
     print profile
@@ -58,7 +67,6 @@ def reply_template_whatgame1(token, user_id, title, subtitle, button1, payload1)
     resp = requests.post("https://graph.facebook.com/v2.6/me/messages?access_token=" + token, json=data)
     print(resp.content)
 
-
 def reply_template_whatgame3(token, user_id, title, subtitle, button1, payload1, button2, payload2, button3, payload3):
     data = {
         "recipient": {"id": user_id},
@@ -92,7 +100,6 @@ def reply_template_whatgame3(token, user_id, title, subtitle, button1, payload1,
     }
     resp = requests.post("https://graph.facebook.com/v2.6/me/messages?access_token=" + token, json=data)
     print(resp.content)
-
 
 def battle_multi(choices_dic):
 
@@ -152,7 +159,6 @@ def battle_multi(choices_dic):
     return [win_list,lose_list]
 
 
-
 @app.route('/', methods=['GET'])
 def handle_verification():
     print "Handling Verification"
@@ -169,55 +175,103 @@ def handle_messages():
   payload = request.get_data()
   print payload
 
-  #game_dic={}
-
   for sender, message in messaging_events(payload):
 
     print message
 
     fb_name = get_fb_name(sender)
+    fb_full_name = get_fb_full_name(sender)
+
+    player_list[sender] = fb_full_name
+    print player_list
 
     print "Incoming from %s: %s" % (fb_name, message)
-    print message.split('-')
 
-    if message in game_choice:
+
+
+    ## Player not yet in GAME_DIC (after clicking Heads-Up)
+    if sender not in game_dic.keys() and message != 'Heads-Up' :
+        send_message(PAT, sender, 'Hi ' + fb_name)
+        reply_template_whatgame1(PAT, sender, 'Paper Rock Scissors', 'Chose your Game:', 'Heads-Up', 'Heads-Up')
+
+
+    ## TRASH TALK All: Starting with #
+    elif message[0:1] == '#':
+        for u in game_dic:
+            if u != sender:
+                send_message(PAT, u, message[1:])
+
+
+    ## Player plays P-R-S
+    elif message in game_choice:
         game_dic[sender] = message
         print game_dic
 
         if '' in game_dic.values():
             send_message(PAT, sender, 'Waiting for your opponent to chose...')
+            send_message(PAT, sender, 'You can Trash Talk using # and your message')
 
         else:
 
             battle = battle_multi(game_dic)
+            print battle
 
-            while len(battle[1]) == 0:
+            if len(battle[1]) == 0:
                 #print battle[1]
-                for u in battle[1]:
+                for u in battle[0]:
                     send_message(PAT, u, 'ITs A TIE - KEEP PLAYING')
                     reply_template_whatgame3(PAT, u, 'Paper Rock Scissors', 'What do you chose:', 'Paper', 'P',
                                              'Rock', 'R', 'Scissors', 'S')
-                    battle[u]=''
+                    battle=[[],[]]
+                    game_dic[u] = ''
 
 
             else:
                 for u in battle[0]:
                     send_message(PAT, u, 'CONGRATS YOU WON')
-                    battle[u] = ''
+                    reply_template_whatgame1(PAT, u, 'Paper Rock Scissors', 'Play again?:', 'Heads-Up',
+                                             'Heads-Up')
+                    game_dic[u] = ''
 
                 for u in battle[1]:
                     send_message(PAT, u, 'TOO BAD YOU LOSE')
-                    battle[u] = ''
+                    reply_template_whatgame1(PAT, u, 'Paper Rock Scissors', 'Play again?:', 'Heads-Up',
+                                             'Heads-Up')
+                    game_dic[u] = ''
 
 
+    ## Invite Somebody to play with you
+    elif message[0:1] == '@':
+        if message[1:] in player_list.values():
+            for p in player_list:
+                if message[1:]  == player_list[p]:
+                    send_message(PAT, p, fb_full_name + ' Challenges you! Are you ready to play?')
+                    reply_template_whatgame1(PAT, p, 'Paper Rock Scissors', 'Chose your Game:', 'Heads-Up',
+                                             'Heads-Up')
+
+        else:
+            send_message(PAT, sender, 'Sorry I don\'t know ' + message[1:] )
+            send_message(PAT, sender, 'You Can tell him to like our page and send us a message')
+
+        for u in game_dic:
+            if u != sender:
+                send_message(PAT, u, message[1:])
+
+
+    ## SOLO
     elif message == 'Solo Training':
         send_message(PAT, sender, 'SOLO')
 
+    ## Heads-Up
     elif message == 'Heads-Up':
         game_dic[sender]=''
 
         if len(game_dic) == 1:
             send_message(PAT, sender, 'Now Waiting for a courageous opponent...')
+            send_message(PAT, sender, 'You can invite a player by typing @ followed with his name in this list:')
+            list_player = ', '.join(player_list.values())
+            send_message(PAT, sender, list_player)
+
 
         elif len(game_dic) == 2:
             for player in game_dic:
@@ -249,10 +303,10 @@ def messaging_events(payload):
   for event in messaging_events:
 
     if "message" in event and "text" in event["message"]:
-      yield event["sender"]["id"], event["message"]["text"].encode('unicode_escape')
+      yield event["sender"]["id"], event["message"]["text"].encode('utf-8')
 
     elif "postback" in event and "payload" in event["postback"]:
-      yield event["sender"]["id"], event["postback"]["payload"].encode('unicode_escape')
+      yield event["sender"]["id"], event["postback"]["payload"].encode('utf-8')
 
     else:
       yield event["sender"]["id"], "I can't echo this"
