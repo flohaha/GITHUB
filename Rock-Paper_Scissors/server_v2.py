@@ -16,8 +16,13 @@ PAT = 'EAAOoaZCRNGOkBAOKr8sfaV05mQl3zbQhHKjIwgCDeTCrrSXgoMmJZCDRdrboJVRfPor7W6w9
 
 global game_dic
 game_dic = {}
+global game_dic_histo
+game_dic_histo = {}
+global game_dic_score
+game_dic_score = {}
+
 player_list = {}
-player_list = {'1050840511630610': 'Flo Geneve', '1081427855265472': 'Flo Floh'}
+player_list = {'1050840511630610': 'Flo Geneve', '1081427855265472': 'Flo Floh', '1077584518990390': u'Markus M\xfcller'}
 
 global game_choice
 game_choice = ['P','R','S']
@@ -58,6 +63,37 @@ def reply_template_whatgame1(token, user_id, title, subtitle, button1, payload1)
                             "type": "postback",
                             "title": button1,
                             "payload": payload1
+                        }]
+                    }]
+                }
+            }
+        }
+    }
+    resp = requests.post("https://graph.facebook.com/v2.6/me/messages?access_token=" + token, json=data)
+    print(resp.content)
+
+
+def reply_template_whatgame2(token, user_id, title, subtitle, button1, payload1, button2, payload2):
+    data = {
+        "recipient": {"id": user_id},
+        "message": {
+            "attachment": {
+                "type": "template",
+                "payload": {
+                    "template_type": "generic",
+                    "elements": [{
+                        "title": title,
+                        "subtitle": subtitle,
+                        #"item_url": "https://www.oculus.com/en-us/rift/",
+                        # image_url: "http://messengerdemo.parseapp.com/img/rift.png",
+                        "buttons": [{
+                            "type": "postback",
+                            "title": button1,
+                            "payload": payload1
+                        }, {
+                            "type": "postback",
+                            "title": button2,
+                            "payload": payload2
                         }]
                     }]
                 }
@@ -170,10 +206,12 @@ def handle_verification():
       return 'Error, wrong validation token'
 
 @app.route('/', methods=['POST'])
+
 def handle_messages():
   print "Handling Messages"
   payload = request.get_data()
   print payload
+
 
   for sender, message in messaging_events(payload):
 
@@ -186,7 +224,6 @@ def handle_messages():
     print player_list
 
     print "Incoming from %s: %s" % (fb_name, message)
-
 
 
     ## Player not yet in GAME_DIC (after clicking Heads-Up)
@@ -205,7 +242,9 @@ def handle_messages():
     ## Player plays P-R-S
     elif message in game_choice:
         game_dic[sender] = message
-        print game_dic
+        game_dic_histo[sender].append(message)
+
+        print 'game_dic : ' + str(game_dic)
 
         if '' in game_dic.values():
             send_message(PAT, sender, 'Waiting for your opponent to chose...')
@@ -214,30 +253,85 @@ def handle_messages():
         else:
 
             battle = battle_multi(game_dic)
-            print battle
+            print 'battle result : ' + str(battle)
 
             if len(battle[1]) == 0:
-                #print battle[1]
+
                 for u in battle[0]:
+                    print 'Answer Player: ' + u
                     send_message(PAT, u, 'ITs A TIE - KEEP PLAYING')
+
+                    score = ''
+                    for s in game_dic_score:
+                        score = score + '\n' + player_list[s] + ' : ' + str(game_dic_score[s])
+
+                    send_message(PAT, u, 'Scores: ' + score )
+
                     reply_template_whatgame3(PAT, u, 'Paper Rock Scissors', 'What do you chose:', 'Paper', 'P',
                                              'Rock', 'R', 'Scissors', 'S')
-                    battle=[[],[]]
+
                     game_dic[u] = ''
 
+                    #   time.sleep(5)
 
-            else:
+                    print 'finished to answer to: ' + u
+
+                battle = [[], []]
+
+
+
+
+
+            elif len(battle[1]) > 0 :
+
                 for u in battle[0]:
                     send_message(PAT, u, 'CONGRATS YOU WON')
-                    reply_template_whatgame1(PAT, u, 'Paper Rock Scissors', 'Play again?:', 'Heads-Up',
-                                             'Heads-Up')
+
+                    time.sleep(0.5)
+
+                    print game_dic_score[u]
+                    game_dic_score[u] = 1 + game_dic_score[u]
+                    print game_dic_score[u]
+
+                    score=''
+                    for s in game_dic_score:
+                        score = score + '\n' + player_list[s] + ' : ' + str(game_dic_score[s])
+
+                    send_message(PAT, u,
+                                 'Scores: ' + score )
+
+                    time.sleep(0.5)
+
+                    reply_template_whatgame2(PAT, u, 'Paper Rock Scissors', 'Play again?:', 'Yes of course',
+                                             'Yes of course', 'No, later maybe', 'No, later maybe')
+
                     game_dic[u] = ''
+
+                    time.sleep(0.5)
 
                 for u in battle[1]:
                     send_message(PAT, u, 'TOO BAD YOU LOSE')
-                    reply_template_whatgame1(PAT, u, 'Paper Rock Scissors', 'Play again?:', 'Heads-Up',
-                                             'Heads-Up')
+
+                    time.sleep(0.5)
+
+                    score = ''
+                    for s in game_dic_score:
+                        score = score + '\n' + player_list[s] + ' : ' + str(game_dic_score[s])
+
+                    send_message(PAT, u,
+                                 'Scores: ' + score )
+
+                    time.sleep(0.5)
+
+                    reply_template_whatgame2(PAT, u, 'Paper Rock Scissors', 'Play again?:', 'Yes of course',
+                                             'Yes of course', 'No, later maybe','No, later maybe')
+
                     game_dic[u] = ''
+
+                    time.sleep(0.5)
+
+                battle = [[], []]
+
 
 
     ## Invite Somebody to play with you
@@ -264,7 +358,9 @@ def handle_messages():
 
     ## Heads-Up
     elif message == 'Heads-Up':
-        game_dic[sender]=''
+        game_dic[sender] = ''
+        game_dic_score[sender] = 0
+        game_dic_histo[sender] = []
 
         if len(game_dic) == 1:
             send_message(PAT, sender, 'Now Waiting for a courageous opponent...')
@@ -286,8 +382,8 @@ def handle_messages():
 
 
     else:
-        #send_message(PAT, sender, message[::-1])
-        reply_template_whatgame1(PAT, sender, 'Paper Rock Scissors', 'Chose your Game:', 'Heads-Up', 'Heads-Up')
+        send_message(PAT, sender, 'I\'m a bit lost sorry...')
+        #reply_template_whatgame1(PAT, sender, 'Paper Rock Scissors', 'Chose your Game:', 'Heads-Up', 'Heads-Up')
 
   return "ok"
 
@@ -303,10 +399,10 @@ def messaging_events(payload):
   for event in messaging_events:
 
     if "message" in event and "text" in event["message"]:
-      yield event["sender"]["id"], event["message"]["text"].encode('utf-8')
+      yield event["sender"]["id"], event["message"]["text"]
 
     elif "postback" in event and "payload" in event["postback"]:
-      yield event["sender"]["id"], event["postback"]["payload"].encode('utf-8')
+      yield event["sender"]["id"], event["postback"]["payload"]
 
     else:
       yield event["sender"]["id"], "I can't echo this"
@@ -320,7 +416,7 @@ def send_message(token, recipient, text):
     params={"access_token": token},
     data=json.dumps({
       "recipient": {"id": recipient},
-      "message": {"text": text.decode('unicode_escape')}
+      "message": {"text": text}    #text.decode('unicode_escape')
     }),
     headers={'Content-type': 'application/json'})
   if r.status_code != requests.codes.ok:
