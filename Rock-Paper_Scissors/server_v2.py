@@ -226,10 +226,29 @@ def handle_messages():
     print "Incoming from %s: %s" % (fb_name, message)
 
 
-    ## Player not yet in GAME_DIC (after clicking Heads-Up)
-    if sender not in game_dic.keys() and message != 'Heads-Up' :
-        send_message(PAT, sender, 'Hi ' + fb_name)
-        reply_template_whatgame1(PAT, sender, 'Paper Rock Scissors', 'Chose your Game:', 'Heads-Up', 'Heads-Up')
+    ## Heads-Up
+    if message == 'Heads-Up':
+        game_dic[sender] = ''
+        game_dic_score[sender] = 0
+        game_dic_histo[sender] = []
+
+        if len(game_dic) == 1:
+            send_message(PAT, sender, 'Now Waiting for a courageous opponent...')
+            send_message(PAT, sender, 'You can invite a player by typing @ followed with his name in this list:')
+            list_player = ', '.join(player_list.values())
+            send_message(PAT, sender, list_player)
+
+
+        elif len(game_dic) == 2:
+            for player in game_dic:
+                players_list = game_dic.keys()
+                opponent = [x for x in game_dic if x != player]
+                opponent = opponent[0]
+                send_message(PAT, player, 'You will play against ' + get_fb_name(opponent))
+                reply_template_whatgame3(PAT, player, 'Paper Rock Scissors', 'What do you chose:', 'Paper', 'P', 'Rock','R', 'Scissors', 'S')
+
+        else:
+            send_message(PAT, sender, 'Sorry I dont handle multi-player yet, you will  have to wait...')
 
 
     ## TRASH TALK All: Starting with #
@@ -302,8 +321,8 @@ def handle_messages():
 
                     time.sleep(0.5)
 
-                    reply_template_whatgame2(PAT, u, 'Paper Rock Scissors', 'Play again?:', 'Yes of course',
-                                             'Yes of course', 'No, later maybe', 'No, later maybe')
+                    reply_template_whatgame2(PAT, u, 'Paper Rock Scissors', 'Play again?:', 'Yes, of course',
+                                             'Yes, of course', 'No, later maybe', 'No, later maybe')
 
                     game_dic[u] = ''
 
@@ -323,15 +342,14 @@ def handle_messages():
 
                     time.sleep(0.5)
 
-                    reply_template_whatgame2(PAT, u, 'Paper Rock Scissors', 'Play again?:', 'Yes of course',
-                                             'Yes of course', 'No, later maybe','No, later maybe')
+                    reply_template_whatgame2(PAT, u, 'Paper Rock Scissors', 'Play again?:', 'Yes, of course',
+                                             'Yes, of course', 'No, later maybe','No, later maybe')
 
                     game_dic[u] = ''
 
                     time.sleep(0.5)
 
                 battle = [[], []]
-
 
 
     ## Invite Somebody to play with you
@@ -356,11 +374,8 @@ def handle_messages():
     elif message == 'Solo Training':
         send_message(PAT, sender, 'SOLO')
 
-    ## Heads-Up
-    elif message == 'Heads-Up':
-        game_dic[sender] = ''
-        game_dic_score[sender] = 0
-        game_dic_histo[sender] = []
+    ## Yes, of course
+    elif message == 'Yes, of course':
 
         if len(game_dic) == 1:
             send_message(PAT, sender, 'Now Waiting for a courageous opponent...')
@@ -379,6 +394,24 @@ def handle_messages():
 
         else:
             send_message(PAT, sender, 'Sorry I dont handle multi-player yet, you will  have to wait...')
+
+    ## No, later maybe
+    elif message == 'No, later maybe':
+
+        send_message(PAT, sender, 'See you soon...')
+
+        #global  game_dic
+        #game_dic = {}
+
+        #print game_dic
+
+
+
+    # new in game
+    elif sender not in game_dic.keys() and message != 'Heads-Up':
+        send_message(PAT, sender, 'Hi ' + fb_name)
+        reply_template_whatgame1(PAT, sender, 'Paper Rock Scissors', 'Chose your Game:', 'Heads-Up', 'Heads-Up')
+
 
 
     else:
