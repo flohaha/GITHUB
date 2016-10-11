@@ -2,6 +2,7 @@
 from flask import Flask, request
 import requests, facebook, random, json, schedule, time
 from random import randint
+import threading, time
 
 #
 # app = Flask(__name__)
@@ -179,6 +180,8 @@ def battle_multi(choices_dic):
     R_count = 0
     S_count = 0
 
+    result_dic = {}
+
     for c in choices_dic:
         if choices_dic[c] == 'P':
             P_count += 1
@@ -208,21 +211,62 @@ def battle_multi(choices_dic):
         print c + " Victories: " + str(win)
 
     if len(win_dic) == 0:
-        max_win = 0
-        win_list = choices_dic.keys()
-        lose_list = []
+        for u in choices_dic.keys():
+            result_dic[u] = 'TIE'
     else:
-        win_list = []
-        lose_list = []
         max_win = max(win_dic.values())
 
         for u in win_dic:
             if win_dic[u] == max_win:
-                win_list.append(u)
+                result_dic[u] = 'WIN'
             elif win_dic[u] < max_win:
-                lose_list.append(u)
+                result_dic[u] = 'LOSE'
 
-    return [win_list,lose_list]
+    return result_dic
+
+
+def answer_result(player,result, score):
+
+    game_dic[player] = ''
+
+    if result == 'TIE':
+        print 'Answer Player: ' + player
+        send_message(PAT, player, 'ITs A TIE - KEEP PLAYING')
+
+        send_message(PAT, player,
+                     'Scores: ' + score)
+
+
+
+    if result == 'WIN':
+        send_message(PAT, player, 'CONGRATS YOU WON')
+        url = gif_win[randint(0,5)]
+        reply_img(PAT, player, url)
+        print game_dic_score[player]
+
+        send_message(PAT, player,
+                     'Scores: ' + score)
+
+
+        reply_template_whatgame2(PAT, player, 'Paper Rock Scissors', 'Play again?:', 'Yes, of course',
+                                          'Yes, of course', 'No, later maybe', 'No, later maybe')
+
+
+
+
+    if result == 'LOSE':
+        send_message(PAT, player, 'TOO BAD YOU LOSE')
+        url = gif_lose[randint(0, 5)]
+        reply_img(PAT, player, url)
+
+        send_message(PAT, player,
+                     'Scores: ' + score)
+
+        reply_template_whatgame2(PAT, player, 'Paper Rock Scissors', 'Play again?:', 'Yes, of course',
+                                         'Yes, of course', 'No, later maybe','No, later maybe')
+
+
+
 
 
 @app.route('/', methods=['GET'])
@@ -262,13 +306,15 @@ def handle_messages():
         game_dic_score[sender] = 0
         game_dic_histo[sender] = []
 
+
+        # 1 player only
         if len(game_dic) == 1:
             send_message(PAT, sender, 'Now Waiting for a courageous opponent...')
             send_message(PAT, sender, 'You can invite an opponent by typing @ and its full name (first and last) or click on our suggestion below:')
             reply_template_whatgame3(PAT, sender, 'Paper Rock Scissors', 'Opponent suggestions:', player_suggestion_1, '@'+player_suggestion_1, player_suggestion_2,
                                      '@'+player_suggestion_2, player_suggestion_3, '@'+player_suggestion_3)
 
-
+        # 2 players in the game
         elif len(game_dic) == 2:
             for player in game_dic:
                 players_list = game_dic.keys()
@@ -295,7 +341,9 @@ def handle_messages():
 
         print 'game_dic : ' + str(game_dic)
 
-        if '' in game_dic.values():
+        check = [i for i in game_dic.values() if i in game_choice ]
+
+        if len(check) != len(game_dic):
             send_message(PAT, sender, 'Waiting for your opponent to chose...')
             send_message(PAT, sender, 'You can Trash Talk using # and your message')
 
@@ -304,86 +352,31 @@ def handle_messages():
             battle = battle_multi(game_dic)
             print 'battle result : ' + str(battle)
 
-            if len(battle[1]) == 0:
 
-                for u in battle[0]:
-                    print 'Answer Player: ' + u
-                    send_message(PAT, u, 'ITs A TIE - KEEP PLAYING')
+            for u in battle:
+                player = u
+                result = battle[u]
 
-                    score = ''
-                    for s in game_dic_score:
-                        score = score + '\n' + player_list[s] + ' : ' + str(game_dic_score[s])
+                if result == 'WIN':
+                    game_dic_score[player] = 1 + game_dic_score[player]
+                print game_dic_score[player]
 
-                    send_message(PAT, u, 'Scores: ' + score )
+            score=''
+            for s in game_dic_score:
+                score = score + '\n' + player_list[s] + ' : ' + str(game_dic_score[s])
 
-                    reply_template_whatgame3(PAT, u, 'Paper Rock Scissors', 'What do you chose:', 'Paper', 'P',
-                                             'Rock', 'R', 'Scissors', 'S')
+            threads = [threading.Thread(target=answer_result, args=(u, battle[u], score)) for u in battle]
 
-                    game_dic[u] = ''
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join()
 
-                    #   time.sleep(5)
+            battle = {}
 
-                    print 'finished to answer to: ' + u
+            for u in game_dic:
+                game_dic[u]=''
 
-                battle = [[], []]
-
-
-
-
-
-            elif len(battle[1]) > 0 :
-
-                for u in battle[0]:
-                    send_message(PAT, u, 'CONGRATS YOU WON')
-                    url = gif_win[randint(0,5)]
-                    reply_img(PAT, u, url)
-
-                    time.sleep(3.5)
-
-                    print game_dic_score[u]
-                    game_dic_score[u] = 1 + game_dic_score[u]
-                    print game_dic_score[u]
-
-                    score=''
-                    for s in game_dic_score:
-                        score = score + '\n' + player_list[s] + ' : ' + str(game_dic_score[s])
-
-                    send_message(PAT, u,
-                                 'Scores: ' + score )
-
-                    #time.sleep(0.5)
-
-                    reply_template_whatgame2(PAT, u, 'Paper Rock Scissors', 'Play again?:', 'Yes, of course',
-                                             'Yes, of course', 'No, later maybe', 'No, later maybe')
-
-                    game_dic[u] = ''
-
-                    #time.sleep(0.5)
-
-                for u in battle[1]:
-                    send_message(PAT, u, 'TOO BAD YOU LOSE')
-                    url = gif_lose[randint(0, 5)]
-                    reply_img(PAT, u, url)
-
-                    #time.sleep(3.5)
-
-                    score = ''
-                    for s in game_dic_score:
-                        score = score + '\n' + player_list[s] + ' : ' + str(game_dic_score[s])
-
-                    send_message(PAT, u,
-                                 'Scores: ' + score )
-
-                    #time.sleep(0.5)
-
-                    reply_template_whatgame2(PAT, u, 'Paper Rock Scissors', 'Play again?:', 'Yes, of course',
-                                             'Yes, of course', 'No, later maybe','No, later maybe')
-
-                    game_dic[u] = ''
-
-                    #time.sleep(0.5)
-
-                battle = [[], []]
 
 
     ## Invite Somebody to play with you
@@ -414,9 +407,14 @@ def handle_messages():
         game_dic[sender] = message[0:1]
 
         if game_dic.values() == ['Y','Y'] :
-            for u in game_dic:
-                reply_template_whatgame3(PAT, u, 'Paper Rock Scissors', 'What do you chose:', 'Paper', 'P', 'Rock',
-                                     'R', 'Scissors', 'S')
+
+            threads = [threading.Thread(target=reply_template_whatgame3, args=(PAT, u, 'Paper Rock Scissors', 'What do you chose:', 'Paper', 'P', 'Rock',
+                                     'R', 'Scissors', 'S')) for u in game_dic]
+
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join()
 
 
         else :
