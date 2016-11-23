@@ -2,7 +2,7 @@
 from flask import Flask, request
 import requests, facebook, random, json, schedule, time
 from random import randint
-import threading, time
+import threading, time, csv
 
 #
 # app = Flask(__name__)
@@ -15,7 +15,6 @@ app = Flask(__name__)
 PAT = 'EAAOoaZCRNGOkBAOKr8sfaV05mQl3zbQhHKjIwgCDeTCrrSXgoMmJZCDRdrboJVRfPor7W6w9pusfMzZC5y4fFDPZCWaC2FDxXGf9Blcsq1Rg6xOTYZAucts1itbDsl9JaENrI5hC6VpCz1S4ZCxPjkw0JUctv7chZCKtlRi1YmC0gZDZD'
 
 
-
 global game_dic
 game_dic = {}
 global game_dic_histo
@@ -25,6 +24,7 @@ game_dic_score = {}
 
 player_list = {}
 player_list = {'1050840511630610': 'Flo Geneve', '1081427855265472': 'Flo Floh', '1077584518990390': u'Markus M\xfcller'}
+
 
 gif_lose = ['https://media.giphy.com/media/ej2dS4FUCNRJK/giphy.gif','https://media.giphy.com/media/hUKiOsbuxdXa0/giphy.gif',
             'https://media1.giphy.com/media/BEob5qwFkSJ7G/200.gif','https://media0.giphy.com/media/YuEdUiDmey8W4/200.gif',
@@ -432,8 +432,13 @@ def handle_messages():
 
     # new in game
     elif sender not in game_dic.keys() and message != 'Heads-Up':
-        send_message(PAT, sender, 'Hi ' + fb_name)
+        send_message(PAT, sender, 'Yo ' + fb_name)
         reply_template_whatgame1(PAT, sender, 'Paper Rock Scissors', 'Chose your Game:', 'Heads-Up', 'Heads-Up')
+
+        row = [time.time(),sender, fb_full_name]
+        with open('fb_user_log','a') as f:
+            w = csv.writer(f)
+            w.writerow(row)
 
 
     else:
