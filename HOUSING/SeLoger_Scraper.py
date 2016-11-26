@@ -5,6 +5,7 @@ from unidecode import unidecode
 
 
 def get_announce_page(url, pagenumber):
+
     driver.get(url)
 
     list = driver.find_elements_by_xpath("//article")
@@ -13,7 +14,7 @@ def get_announce_page(url, pagenumber):
     annonce = ''
 
     for l in list:
-        i += 1
+
         print i
 
         try:
@@ -92,7 +93,7 @@ def get_announce_page(url, pagenumber):
         except:
             annonce_picture_5 = 'NULL'
 
-        if annonce_id is not None:
+        if annonce_id is not None :
             annonce_tmp = 'SELOGER' + \
                           '\t' + gmt_tmstp + \
                           '\t' + str(i) + \
@@ -111,9 +112,19 @@ def get_announce_page(url, pagenumber):
                           '\t' + annonce_picture_3 + \
                           '\t' + annonce_picture_4 + \
                           '\t' + annonce_picture_5 + '\n'
+
+            try:
+               details = get_annonce_details(annonce_url)
+            except:
+               print 'invalid url'
+
+            print details
+
             annonce = annonce + annonce_tmp
 
             print annonce_tmp
+
+        i += 1
 
     try:
         driver.find_element_by_xpath("//*[@class='pagination_next active']")
@@ -123,10 +134,9 @@ def get_announce_page(url, pagenumber):
 
     return [annonce, more]
 
-
 def get_annonce_details(url):
-    chromedriver = "/usr/local/share/chromedriver"
-    os.environ["webdriver.chrome.driver"] = chromedriver
+    #chromedriver = "/usr/local/share/chromedriver"
+    #os.environ["webdriver.chrome.driver"] = chromedriver
     driver = webdriver.Chrome(chromedriver)
     driver.get(url)
 
@@ -236,56 +246,52 @@ def get_annonce_details(url):
 
 
 
+domain = 'http://www.seloger.com/'
+ci = '640122' # Biarritz
+idtt = '2' # Ventes Appartement, Maisons
+idtypebien='1,2,9'
 
 
+chromedriver = "/usr/local/share/chromedriver"
+os.environ["webdriver.chrome.driver"] = chromedriver
+driver = webdriver.Chrome(chromedriver)
 
-#
-# domain = 'http://www.seloger.com/'
-# ci = '640122' # Biarritz
-# idtt = '2' # Ventes Appartement, Maisons
-# idtypebien='1,2,9'
-#
-#
-# chromedriver = "/usr/local/share/chromedriver"
-# os.environ["webdriver.chrome.driver"] = chromedriver
-# driver = webdriver.Chrome(chromedriver)
-#
-#
-# gmt_tmstp = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-#
-# all_annonces = ''
-#
-#
-# url_init = domain + '/list.htm?' + 'ci=' + ci + '&idtt=' + idtt + '&idtypebien=' + idtypebien
-#
-# more = 'more'
-# pagenumber = 1
-#
-# while more == 'more' :
-#
-#     if pagenumber == 1:
-#         url = url_init
-#     else:
-#         url = url_init +  '&LISTING-LISTpg=' + str(pagenumber)
-#
-#     page = get_announce_page(url, pagenumber)
-#
-#     all_annonces_tmp = page[0]
-#     more = page[1]
-#     print all_annonces_tmp
-#
-#     all_annonces = all_annonces + all_annonces_tmp
-#
-#     pagenumber += 1
-#
-# with open('logs_'+'SELOGER_'+ gmt_tmstp + '.txt','w') as file:
-#     file.write(all_annonces.encode('utf-8'))
-#
-# driver.quit()
 
-url =  'http://www.seloger.com/annonces/achat/appartement/pau-64/101953099.htm'
+gmt_tmstp = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
-annonce_details = get_annonce_details(url)
+all_annonces = ''
 
-for i in annonce_details:
-    print i
+
+url_init = domain + '/list.htm?' + 'ci=' + ci + '&idtt=' + idtt + '&idtypebien=' + idtypebien
+
+more = 'more'
+pagenumber = 1
+
+while more == 'more' :
+
+    if pagenumber == 1:
+        url = url_init
+    else:
+        url = url_init +  '&LISTING-LISTpg=' + str(pagenumber)
+
+    page = get_announce_page(url, pagenumber)
+
+    all_annonces_tmp = page[0]
+    more = page[1]
+    print all_annonces_tmp
+
+    all_annonces = all_annonces + all_annonces_tmp
+
+    pagenumber += 1
+
+with open('logs_'+'SELOGER_'+ gmt_tmstp + '.txt','w') as file:
+    file.write(all_annonces.encode('utf-8'))
+
+driver.quit()
+
+# url =  'http://www.seloger.com/annonces/achat/appartement/pau-64/101953099.htm'
+#
+# annonce_details = get_annonce_details(url)
+#
+# for i in annonce_details:
+#     print i

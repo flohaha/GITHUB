@@ -23,6 +23,7 @@ global game_dic_score
 game_dic_score = {}
 
 player_list = {}
+player_list_flofloh = {'1050840511630610': 'Flo Geneve', '1043505975705337': 'Rachael Sordo', '1077584518990390': u'Markus M\xfcller'}
 player_list = {'1050840511630610': 'Flo Geneve', '1081427855265472': 'Flo Floh', '1077584518990390': u'Markus M\xfcller'}
 
 
@@ -224,7 +225,6 @@ def battle_multi(choices_dic):
 
     return result_dic
 
-
 def answer_result(player,result, score):
 
     game_dic[player] = ''
@@ -236,6 +236,8 @@ def answer_result(player,result, score):
         send_message(PAT, player,
                      'Scores: ' + score)
 
+        reply_template_whatgame3(PAT, player, 'Paper Rock Scissors', 'What do you chose:', 'Paper', 'P', 'Rock', 'R',
+                                 'Scissors', 'S')
 
 
     if result == 'WIN':
@@ -266,9 +268,7 @@ def answer_result(player,result, score):
                                          'Yes, of course', 'No, later maybe','No, later maybe')
 
 
-
-
-
+## Handling verification
 @app.route('/', methods=['GET'])
 def handle_verification():
     print "Handling Verification"
@@ -279,6 +279,8 @@ def handle_verification():
       print "Verification failed!"
       return 'Error, wrong validation token'
 
+
+## Handling messages
 @app.route('/', methods=['POST'])
 
 def handle_messages():
