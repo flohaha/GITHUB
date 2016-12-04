@@ -1,5 +1,6 @@
 
-from flask import Flask, request
+from flask import Flask
+import request
 import requests, facebook, random, json, schedule, time
 from random import randint
 import threading, time, csv
