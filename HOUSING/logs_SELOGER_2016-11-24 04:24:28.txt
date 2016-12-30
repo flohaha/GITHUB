@@ -1,0 +1,20 @@
+SELOGER	2016-11-24 04:24:28	0	1	113729745	580164	vente Appartement 4 pièces Biarritz	http://www.seloger.com/annonces/achat/appartement/biarritz-64/la-rochefoucauld-aguilera/113729745.htm?ci=640122&idtt=2&idtypebien=1,2,9	547 000 €	4 p	2 chb	122 m²	http://david.dussau.capifrance.fr/	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	2	1	114205523	538359	vente Appartement 2 pièces Biarritz	http://www.seloger.com/annonces/achat/appartement/biarritz-64/front-de-mer/114205523.htm?ci=640122&idtt=2&idtypebien=1,2,9	197 000 €	2 p	1 chb	35 m²	http://www.groom-immo.com/	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	3	1	114093169	217879	vente Appartement 4 pièces Biarritz	http://www.seloger.com/annonces/achat-de-prestige/appartement/biarritz-64/la-rochefoucauld-aguilera/114093169.htm?ci=640122&idtt=2&idtypebien=1,2,9	545 000 €	4 p	3 chb	100 m²	http://www.20000lieux.com/immo	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	4	1	113557985	495578	vente Maison / Villa 5 pièces Biarritz	http://www.seloger.com/annonces/achat-de-prestige/maison/biarritz-64/parme-la-negresse/113557985.htm?ci=640122&idtt=2&idtypebien=1,2,9	750 000 €	3 chb	5 p	117 m²	http://www.bollinibrethes.optimhome.com/	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	5	1	113443117	496668	vente Appartement 3 pièces Biarritz	http://www.seloger.com/annonces/achat/appartement/biarritz-64/les-rocailles-lahouze/113443117.htm?ci=640122&idtt=2&idtypebien=1,2,9	404 000 €	3 p	2 chb	89 m²	http://www.carmen-immobilier.com/	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	6	1	113815217	617738	vente Appartement 3 pièces Biarritz	http://www.seloger.com/annonces/achat/appartement/biarritz-64/republique-beau-rivage/113815217.htm?ci=640122&idtt=2&idtypebien=1,2,9	315 000 €	3 p	2 chb	74 m²	http://www.puyo-immobilier.com/	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	7	1	113551689	488398	vente Appartement 2 pièces Biarritz	http://www.seloger.com/annonces/achat/appartement/biarritz-64/113551689.htm?ci=640122&idtt=2&idtypebien=1,2,9	150 000 €	2 p	1 chb	38,35 m²	NULL	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	8	1	111080937	531101	vente Appartement 3 pièces Biarritz	http://www.seloger.com/annonces/achat/appartement/biarritz-64/republique-beau-rivage/111080937.htm?ci=640122&idtt=2&idtypebien=1,2,9	305 000 €	3 p	2 chb	64 m²	http://www.immobiliere-biarritz.com/	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	9	1	112813509	447085	vente Appartement 3 pièces Biarritz	http://www.seloger.com/annonces/achat/appartement/biarritz-64/112813509.htm?ci=640122&idtt=2&idtypebien=1,2,9	340 000 €	3 p	2 chb	81 m²	http://www.senseyimmo.fr/locations/type_transaction/location.html	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	10	1	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	11	1	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	12	1	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	13	1	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	14	1	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	15	1	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	16	1	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	17	1	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	18	1	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	19	1	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL
+SELOGER	2016-11-24 04:24:28	20	1	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL
