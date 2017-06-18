@@ -1,0 +1,5 @@
+
+sudo apt-get install python-setuptools
+pip install cached_property
+
+sudo python setup.py install
