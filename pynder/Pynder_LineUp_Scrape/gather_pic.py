@@ -11,8 +11,9 @@ os.chdir('Pics')
 new_dir = os.getcwd()
 print new_dir
 
-
+cnt = 0
 for subdir, dirs, files in os.walk(".", topdown=False):
+
     for file in files:
         #print os.path.join(subdir, file)
         filepath = subdir + os.sep + file
@@ -21,3 +22,6 @@ for subdir, dirs, files in os.walk(".", topdown=False):
         if file.endswith(".jpg"):
             print (file)
             copyfile(filepath, dst +  '/' + file)
+            cnt = cnt + 1
+
+print 'Total Images: ' + str(cnt)
